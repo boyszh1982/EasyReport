@@ -61,6 +61,17 @@ public class ReportController {
         return modelAndView;
     }
 
+    /**
+     * 重写templates\report\themes\content\chart.html.<table class="designer-table" style="width: 100%;padding: 6px;">
+     *
+     * @param type
+     * @param uid
+     * @param theme
+     * @param isRenderByForm
+     * @param uiStyle
+     * @param request
+     * @return
+     */
     @OpLog(name = "预览报表")
     @RequestMapping(value = {"/{type}/uid/{uid}"})
     //@RequiresPermissions("report.designer:preview")
@@ -77,6 +88,7 @@ public class ReportController {
             } else {
                 final QueryParamFormView formView = StringUtils.equalsIgnoreCase("bootstrap", uiStyle)
                     ? new BootstrapQueryFormView() : new EasyUIQueryFormView();
+                // 重写了HTML
                 ReportUtils.renderByTemplate(uid, modelAndView, formView, request);
             }
         } catch (QueryParamsException | TemplatePraseException ex) {
