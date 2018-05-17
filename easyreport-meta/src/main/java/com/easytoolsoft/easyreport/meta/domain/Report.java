@@ -75,6 +75,10 @@ public class Report implements Serializable {
      */
     private String createUser;
     /**
+     * 创建用户中文名
+     */
+    private String createUserName;
+    /**
      * 记录创建时间
      */
     private Date gmtCreated;

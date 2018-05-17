@@ -12,6 +12,8 @@ var MetaDataDesigner = {
         DesignerMVC.View.bindEvent();
         DesignerMVC.View.bindValidate();
         DesignerMVC.View.initData();
+        //code by stanley for permission at 20180517 , //TODO
+        DesignerMVC.View.hideBtnByPermissionSet();
     },
     listReports: function (category) {
         DesignerMVC.Controller.listReports(category.id);
@@ -154,6 +156,48 @@ var DesignerMVC = {
         SqlEditor: null,
         PreviewSqlEditor: null,
         HistorySqlEditor: null,
+        // 放在最后执行
+        hideBtnByPermissionSet: function() {
+            //code by stanley at 20180517 for hide
+            setTimeout(function(){
+                var permissionSet = $('#permissionSet');
+                console.log($('#permissionSet').val());
+                console.log($('#permissionSet').html());
+                console.log($('#permissionSet').text());
+                console.log(permissionSet);
+                //获取所有的toolbar按钮
+                var button = $('div.datagrid div.datagrid-toolbar a');
+                for (var i = 0; i < button.length; i++) {
+                    var toolbar = button[i];
+                    var id = toolbar.id;
+                    if (id == "designer_detail") {  //隐藏Id为add的按钮
+                        //$('div.datagrid div.datagrid-toolbar a').eq(i).hide();
+                    }
+                    if (id == "designer_add") {  //不隐藏id为delete的按钮
+                        //button.eq(i).hide();
+                    }
+                    if (id == "designer_edit") {  //不隐藏id为delete的按钮
+                        //button.eq(i).hide();
+                    }
+                    if (id == "designer_copy") {  //不隐藏id为delete的按钮
+                        //button.eq(i).hide();
+                    }
+                    if (id == "designer_preview") {  //不隐藏id为delete的按钮
+                        //button.eq(i).hide();
+                    }
+                    if (id == "designer_history") {  //不隐藏id为delete的按钮
+                        //button.eq(i).hide();
+                    }
+                    if (id == "designer_remove") {  //不隐藏id为delete的按钮
+                        //button.eq(i).hide();
+                    }
+
+                    //如果按钮都没权限，隐藏了可直接隐藏toolbar
+                    //$('div.datagrid div.datagrid-toolbar').hide();
+                }
+
+            },100);
+        },
         initControl: function () {
             $('#report-datagrid').datagrid({
                 method: 'get',
@@ -164,32 +208,39 @@ var DesignerMVC = {
                 fitColumns: true,
                 singleSelect: true,
                 toolbar: [{
+                    id: 'designer_detail',  //code by stanley at 20180517 for hide
                     text: '详细信息',
                     iconCls: 'icon-info',
                     handler: function () {
                         DesignerMVC.Controller.showDetail();
                     }
                 }, '-', {
+                    id: 'designer_add',  //code by stanley at 20180517 for hide
                     text: '增加',
                     iconCls: 'icon-add',
                     handler: DesignerMVC.Controller.add
                 }, '-', {
+                    id: 'designer_edit',  //code by stanley at 20180517 for hide
                     text: '修改',
                     iconCls: 'icon-edit1',
                     handler: DesignerMVC.Controller.edit
                 }, '-', {
+                    id: 'designer_copy',  //code by stanley at 20180517 for hide
                     text: '复制',
                     iconCls: 'icon-copy',
                     handler: DesignerMVC.Controller.copy
                 }, '-', {
+                    id: 'designer_preview',  //code by stanley at 20180517 for hide
                     text: '预览',
                     iconCls: 'icon-preview',
                     handler: DesignerMVC.Controller.preview
                 }, '-', {
+                    id: 'designer_history',  //code by stanley at 20180517 for hide
                     text: '版本',
                     iconCls: 'icon-history',
                     handler: DesignerMVC.Controller.showHistorySql
                 }, '-', {
+                    id: 'designer_remove',  //code by stanley at 20180517 for hide
                     text: '删除',
                     iconCls: 'icon-remove',
                     handler: DesignerMVC.Controller.remove
@@ -225,7 +276,7 @@ var DesignerMVC = {
                         return value == 1 ? "启用" : "禁用";
                     }
                 }, {
-                    field: 'createUser',
+                    field: 'createUserName',
                     title: '创建者',
                     width: 100,
                     sortable: true

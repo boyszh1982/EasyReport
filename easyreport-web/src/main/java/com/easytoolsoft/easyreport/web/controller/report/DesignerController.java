@@ -17,6 +17,7 @@ import com.easytoolsoft.easyreport.common.pair.IdNamePair;
 import com.easytoolsoft.easyreport.engine.data.ReportMetaDataColumn;
 import com.easytoolsoft.easyreport.engine.util.VelocityUtils;
 import com.easytoolsoft.easyreport.membership.domain.User;
+import com.easytoolsoft.easyreport.membership.service.UserService;
 import com.easytoolsoft.easyreport.meta.domain.Report;
 import com.easytoolsoft.easyreport.meta.domain.ReportHistory;
 import com.easytoolsoft.easyreport.meta.domain.example.ReportExample;
@@ -57,6 +58,8 @@ public class DesignerController
     private ReportService dsService;
     @Resource
     private ConfService confService;
+    @Resource
+    private UserService userService;
 
     @GetMapping(value = "/list")
     @OpLog(name = "分页获取报表列表")
@@ -64,6 +67,9 @@ public class DesignerController
     public Map<String, Object> list(final DataGridPager pager, final Integer id) {
         final PageInfo pageInfo = this.getPageInfo(pager);
         final List<Report> list = this.service.getByPage(pageInfo, "t1.category_id", id == null ? 0 : id);
+        for(Report report : list){
+            report.setCreateUserName( userService.getUserByAccount(report.getCreateUser()).getName() ) ;
+        }
         final Map<String, Object> modelMap = new HashMap<>(2);
         modelMap.put("total", pageInfo.getTotals());
         modelMap.put("rows", list);

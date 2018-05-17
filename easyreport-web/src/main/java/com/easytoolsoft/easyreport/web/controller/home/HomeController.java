@@ -1,6 +1,7 @@
 package com.easytoolsoft.easyreport.web.controller.home;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -31,6 +32,10 @@ public class HomeController {
     public String index(@CurrentUser final User loginUser, final Model model) {
         model.addAttribute("roleNames", this.membershipFacade.getRoleNames(loginUser.getRoles()));
         model.addAttribute("user", loginUser);
+
+        //code by stanley for button hide at 20180517
+        final Set<String> permissionSet = this.membershipFacade.getPermissionSet(loginUser.getRoles());
+        model.addAttribute("permissionSet",permissionSet);
         return "home/index";
     }
 
