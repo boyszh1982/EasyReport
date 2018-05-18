@@ -37,19 +37,20 @@ var ChartReportMVC = {
             /**
              * code by stanley for 选择维度，自动同步到维度下拉列表。
              */
-            $('#chart-report-form-condition select').each(function(idx,element){
-                //console.log(element);
-                $(this).combobox({
-                    onChange:function(oldVal,newVal){
-                        if(oldVal === newVal ) {
-                            ;
-                        }
-                        else{
-                            ChartReportMVC.Controller.generate();
-                        }
-                    }
-                });
-            });
+            //
+            // $('#chart-report-form-condition select').each(function(idx,element){
+            //     //console.log(element);
+            //     $(this).combobox({
+            //         onChange:function(oldVal,newVal){
+            //             if(oldVal === newVal ) {
+            //                 ;
+            //             }
+            //             else{
+            //                 ChartReportMVC.Controller.generate();
+            //             }
+            //         }
+            //     });
+            // });
         },
         bindValidate: function () {
         },
