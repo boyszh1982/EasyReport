@@ -12,7 +12,8 @@
                     <!--<input id="chart-report-name" type="hidden" name="name" th:value="${name}"/>-->
                     <!--<input id="chart-report-uid" type="hidden" name="uid" th:value="${uid}"/>-->
                 <!--</td>-->
-                <td style="text-align: left;" th:utext="${formHtmlText}">&nbsp;&nbsp;
+                <!-- code by stanley for 选择维度，自动同步到维度下拉列表。 -->
+                <td id="chart-report-form-condition" style="text-align: left;" th:utext="${formHtmlText}">&nbsp;&nbsp;
                 </td>
             </tr>
             <tr id="chart-report-columns">

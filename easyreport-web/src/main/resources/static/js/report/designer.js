@@ -161,10 +161,10 @@ var DesignerMVC = {
             //code by stanley at 20180517 for hide
             setTimeout(function(){
                 var permissionSet = $('#permissionSet');
-                console.log($('#permissionSet').val());
-                console.log($('#permissionSet').html());
-                console.log($('#permissionSet').text());
-                console.log(permissionSet);
+                //console.log($('#permissionSet').val());
+                //console.log($('#permissionSet').html());
+                //console.log($('#permissionSet').text());
+                //console.log(permissionSet);
                 //获取所有的toolbar按钮
                 var button = $('div.datagrid div.datagrid-toolbar a');
                 for (var i = 0; i < button.length; i++) {

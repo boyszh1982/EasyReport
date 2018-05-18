@@ -33,6 +33,23 @@ var ChartReportMVC = {
                 var checked = $("#chart-report-columns input[name='checkAllStatColumn']").prop("checked");
                 $("#chart-report-columns input[name='statColumns']").prop("checked", checked);
             });
+
+            /**
+             * code by stanley for 选择维度，自动同步到维度下拉列表。
+             */
+            $('#chart-report-form-condition select').each(function(idx,element){
+                //console.log(element);
+                $(this).combobox({
+                    onChange:function(oldVal,newVal){
+                        if(oldVal === newVal ) {
+                            ;
+                        }
+                        else{
+                            ChartReportMVC.Controller.generate();
+                        }
+                    }
+                });
+            });
         },
         bindValidate: function () {
         },
@@ -60,6 +77,9 @@ var ChartReportMVC = {
                 },
                 success: function (result) {
                     if (!result.code) {
+                        //console.log($("#chart-report-form").serialize());
+                        //console.log(ChartReportMVC.URLs.getData.url);
+                        //console.log(result.data);
                         ChartReportMVC.Model.metaData = result.data;
                         ChartReportMVC.Util.initDimOptions();
                         ChartReportMVC.Controller.clear();
@@ -171,6 +191,7 @@ var ChartReportMVC = {
     Util: {
         initDimOptions: function () {
             for (var key in ChartReportMVC.Model.metaData.dimColumnMap) {
+                //console.log(ChartReportMVC.Model.metaData.dimColumnMap[key]);
                 var id = "#dim_" + key;
                 $(id).combobox({
                     textField: 'text',
