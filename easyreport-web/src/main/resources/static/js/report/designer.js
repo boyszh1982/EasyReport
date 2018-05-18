@@ -4,16 +4,18 @@ $(function () {
 
 var MetaDataDesigner = {
     init: function () {
-        DesignerMVC.View.initControl();
-        DesignerMVC.View.resizeDesignerElments();
-        DesignerMVC.View.initSqlEditor();
-        DesignerMVC.View.initHistorySqlEditor();
-        DesignerMVC.View.initPreviewSqlEditor();
-        DesignerMVC.View.bindEvent();
-        DesignerMVC.View.bindValidate();
-        DesignerMVC.View.initData();
-        //code by stanley for permission at 20180517 , //TODO
-        DesignerMVC.View.hideBtnByPermissionSet();
+        $.post( "/rest/home/getPermissionSet", function(result ) {
+            DesignerMVC.View.initControl(result );
+            DesignerMVC.View.resizeDesignerElments();
+            DesignerMVC.View.initSqlEditor();
+            DesignerMVC.View.initHistorySqlEditor();
+            DesignerMVC.View.initPreviewSqlEditor();
+            DesignerMVC.View.bindEvent();
+            DesignerMVC.View.bindValidate();
+            DesignerMVC.View.initData();
+            //code by stanley for permission at 20180517 , //TODO
+            DesignerMVC.View.hideBtnByPermissionSet();
+        });
     },
     listReports: function (category) {
         DesignerMVC.Controller.listReports(category.id);
@@ -160,7 +162,8 @@ var DesignerMVC = {
         hideBtnByPermissionSet: function() {
             //code by stanley at 20180517 for hide
             setTimeout(function(){
-                var permissionSet = $('#permissionSet');
+                //console.log(MetaDataDesigner["permissionSet"]);
+                //var permissionSet = $('#permissionSet');
                 //console.log($('#permissionSet').val());
                 //console.log($('#permissionSet').html());
                 //console.log($('#permissionSet').text());
@@ -198,7 +201,131 @@ var DesignerMVC = {
 
             },100);
         },
-        initControl: function () {
+        initControl: function (result) {
+            //code by stanley for auto view btns at 20180518
+            var toolbarBtns = [];
+            var rowIcons = [];
+            for(var i = 0;i < (result||{data:{permissionSet:[]}}).data.permissionSet.length; i++){
+                if(result.data.permissionSet[i] == 'report.designer:view' ) {
+                    toolbarBtns.push({
+                        //id: 'designer_detail',  //code by stanley at 20180517 for hide
+                        id: 10010,
+                        text: '详细信息',
+                        iconCls: 'icon-info',
+                        handler: function () {
+                            DesignerMVC.Controller.showDetail();
+                        }
+                    });
+                    //toolbarBtns.push('-');
+                    rowIcons.push({
+                        id: 10010,
+                        name: "info",
+                        title: "详细信息"
+                    });
+                }
+
+                if(result.data.permissionSet[i] == 'report.designer:add' ) {
+                    toolbarBtns.push({
+                        //id: 'designer_add',  //code by stanley at 20180517 for hide
+                        id: 10020,
+                        text: '增加',
+                        iconCls: 'icon-add',
+                        handler: DesignerMVC.Controller.add
+                    });
+                    //toolbarBtns.push('-');
+                }
+
+                if(result.data.permissionSet[i] == 'report.designer:update' ) {
+                    toolbarBtns.push({
+                        //id: 'designer_edit',  //code by stanley at 20180517 for hide
+                        id: 10030,
+                        text: '编辑',
+                        iconCls: 'icon-edit1',
+                        handler: DesignerMVC.Controller.edit
+                    });
+                    //toolbarBtns.push('-');
+                    rowIcons.push({
+                        id: 10030,
+                        name: "edit",
+                        title: "编辑"
+                    });
+
+                }
+
+                if(result.data.permissionSet[i] == 'report.designer:add' ) {
+                    toolbarBtns.push({
+                        //id: 'designer_copy',  //code by stanley at 20180517 for hide
+                        id: 10040,
+                        text: '复制',
+                        iconCls: 'icon-copy',
+                        handler: DesignerMVC.Controller.copy
+                    });
+                    //toolbarBtns.push('-');
+                    rowIcons.push({
+                        id: 10040,
+                        name: "copy",
+                        title: "复制"
+                    });
+                }
+
+                if(result.data.permissionSet[i] == 'report.designer:preview' ) {
+                    toolbarBtns.push({
+                        //id: 'designer_preview',  //code by stanley at 20180517 for hide
+                        id: 10050,
+                        text: '预览',
+                        iconCls: 'icon-preview',
+                        handler: DesignerMVC.Controller.preview
+                    });
+                    //toolbarBtns.push('-');
+                    rowIcons.push({
+                        id: 10050,
+                        name: "preview",
+                        title: "预览"
+                    });
+                }
+
+                if(result.data.permissionSet[i] == 'report.designer:view' ) {
+                    toolbarBtns.push({
+                        //id: 'designer_history',  //code by stanley at 20180517 for hide
+                        id: 10060,
+                        text: '版本',
+                        iconCls: 'icon-history',
+                        handler: DesignerMVC.Controller.showHistorySql
+                    });
+                    //toolbarBtns.push('-');
+                    rowIcons.push({
+                        id: 10060,
+                        name: "history",
+                        title: "版本"
+                    });
+                }
+
+                if(result.data.permissionSet[i] == 'report.designer:delete') {
+                    toolbarBtns.push({
+                        //id: 'designer_remove',  //code by stanley at 20180517 for hide
+                        id: 10070,
+                        text: '删除',
+                        iconCls: 'icon-remove',
+                        handler: DesignerMVC.Controller.remove
+                    });
+                    //toolbarBtns.push('-');
+                    rowIcons.push({
+                        id: 10070,
+                        name: "remove",
+                        title: "删除"
+                    });
+                }
+
+            }
+
+            toolbarBtns.sort(function(objA,objB){
+                return objA.id > objB.id ? 1 : -1 ;
+            });
+
+            rowIcons.sort(function(objA,objB){
+                return objA.id > objB.id ? 1 : -1 ;
+            });
+
             $('#report-datagrid').datagrid({
                 method: 'get',
                 pageSize: 50,
@@ -207,44 +334,7 @@ var DesignerMVC = {
                 rownumbers: true,
                 fitColumns: true,
                 singleSelect: true,
-                toolbar: [{
-                    id: 'designer_detail',  //code by stanley at 20180517 for hide
-                    text: '详细信息',
-                    iconCls: 'icon-info',
-                    handler: function () {
-                        DesignerMVC.Controller.showDetail();
-                    }
-                }, '-', {
-                    id: 'designer_add',  //code by stanley at 20180517 for hide
-                    text: '增加',
-                    iconCls: 'icon-add',
-                    handler: DesignerMVC.Controller.add
-                }, '-', {
-                    id: 'designer_edit',  //code by stanley at 20180517 for hide
-                    text: '修改',
-                    iconCls: 'icon-edit1',
-                    handler: DesignerMVC.Controller.edit
-                }, '-', {
-                    id: 'designer_copy',  //code by stanley at 20180517 for hide
-                    text: '复制',
-                    iconCls: 'icon-copy',
-                    handler: DesignerMVC.Controller.copy
-                }, '-', {
-                    id: 'designer_preview',  //code by stanley at 20180517 for hide
-                    text: '预览',
-                    iconCls: 'icon-preview',
-                    handler: DesignerMVC.Controller.preview
-                }, '-', {
-                    id: 'designer_history',  //code by stanley at 20180517 for hide
-                    text: '版本',
-                    iconCls: 'icon-history',
-                    handler: DesignerMVC.Controller.showHistorySql
-                }, '-', {
-                    id: 'designer_remove',  //code by stanley at 20180517 for hide
-                    text: '删除',
-                    iconCls: 'icon-remove',
-                    handler: DesignerMVC.Controller.remove
-                }],
+                toolbar: toolbarBtns ,
                 loadFilter: function (src) {
                     if (!src.code) {
                         return src.data;
@@ -300,25 +390,7 @@ var DesignerMVC = {
                     title: '操作',
                     width: 100,
                     formatter: function (value, row, index) {
-                        var icons = [{
-                            "name": "info",
-                            "title": "详细信息"
-                        }, {
-                            "name": "edit",
-                            "title": "编辑"
-                        }, {
-                            "name": "copy",
-                            "title": "复制"
-                        }, {
-                            "name": "preview",
-                            "title": "预览"
-                        }, {
-                            "name": "history",
-                            "title": "版本"
-                        }, {
-                            "name": "remove",
-                            "title": "删除"
-                        }];
+                        var icons = rowIcons;
                         var buttons = [];
                         for (var i = 0; i < icons.length; i++) {
                             var tmpl = '<a href="#" title ="${title}" ' +

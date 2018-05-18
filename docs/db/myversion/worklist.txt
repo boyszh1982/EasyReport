@@ -1,4 +1,7 @@
-2018-05-12 项目初始化安装测试（16h）
+2018-05-12 项目初始化安装测试（6h）
 2018-05-17 演示数据见表及录入（4h）
 2018-05-17 演示报表配置（2h）
-2018-05-18 图表维度不能随着查询条件变化BUG修改（8h） static/js/report/themes/content/chart.js line 41
+2018-05-18 图表维度不能随着查询条件变化BUG修改（8h） static/js/report/themes/content/chart.js line 41 -
+2018-05-18 图标按钮根据权限显示 （22h）src/main/resources/templates/home/index.html
+                                    HomeController.getPermissionSet
+                                    static/js/report/designer.js line 204 -

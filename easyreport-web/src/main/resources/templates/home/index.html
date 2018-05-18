@@ -95,9 +95,18 @@
         </table>
     </form>
 
-    <!-- 隐藏区域 -->
-    <div id="permissionSet" style="display: none;" th:text="${permissionSet}">
-    </div>
+
 </div>
+
+<!-- 隐藏区域 -->
+<!--<div id="permissionSet" style="display: none;" th:text="${permissionSet}">-->
+<!--</div>-->
+<script th:inline="javascript">
+    var permissionSet = [[${permissionSet}]];
+    //console.log("-----------------------------");
+    console.log(permissionSet);
+    //window["global_permissionSet"] = permissionSet;
+</script>
+
 </body>
 </html>
