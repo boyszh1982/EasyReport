@@ -57,12 +57,12 @@ spring:
         mode: HTML
         # prefix and cache just for dev
         # prefix: ${project.base-dir}/src/main/resources/templates/
-        prefix: file:///D:/workspace-github/EasyReport/easyreport-web/src/main/resources/templates/
+        prefix: file:///D:/workspace/easyreport/easyreport-web/src/main/resources/templates/
         cache: false
     # resources just for dev
     resources:
       # static-locations: ${project.base-dir}/src/main/resources/static/
-      static-locations: file:///D:/workspace-github/EasyReport/easyreport-web/src/main/resources/static/
+      static-locations: file:///D:/workspace/easyreport/easyreport-web/src/main/resources/static/
       cache-period: 0
 #
 # logging

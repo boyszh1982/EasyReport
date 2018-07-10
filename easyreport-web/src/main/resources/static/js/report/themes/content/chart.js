@@ -4,6 +4,9 @@ var ChartReport = {
         ChartReportMVC.View.bindEvent();
         ChartReportMVC.View.bindValidate();
         ChartReportMVC.View.initData();
+
+        //F00001
+        ChartReportMVC.View.initSelect();
     }
 };
 
@@ -12,6 +15,12 @@ var ChartReportCommon = {
 };
 
 var ChartReportMVC = {
+    Define: {
+        SELECT_ALL_OPTIONS_KEY : '_SELECT_ALL_OPTIONS'
+    },
+    Cache: {
+        dataMap : {}
+    },
     URLs: {
         getData: {
             url: ChartReportCommon.baseUrl + '/chart/getData.json',
@@ -56,6 +65,66 @@ var ChartReportMVC = {
         },
         initData: function () {
             ChartReportMVC.Controller.generate();
+        },
+        //F00001
+        initSelect: function () {
+            $("#chart-report-div select[data-options='multiple:true']").each(function(){
+                var oThis = $(this);
+                oThis.prepend("<option value='"+ChartReportMVC.Define.SELECT_ALL_OPTIONS_KEY+"'>---全选/反选---</option>");
+                oThis.combobox({
+                    multiple:true,
+                    editable:false,
+                    //valueField:'value',
+                    //textField:'text',
+                    onBeforeLoad:function(param) {
+                    },
+                    onLoadSuccess:function() {
+                        //为每个oThis构造一个存储全量数据的缓存
+                        ChartReportMVC.Cache.dataMap[oThis] = [];
+                        //获取全部数据
+                        oThis.children('option').each(function(index,element){
+                            if(element.value === ChartReportMVC.Define.SELECT_ALL_OPTIONS_KEY ) {
+                                ChartReportMVC.Cache.dataMap[oThis].push(element.value);
+                                ;
+                            }
+                            else{
+                                ChartReportMVC.Cache.dataMap[oThis].push(element.value);
+                            }
+                        });
+                        //console.log(TableReportMVC.Cache.dataMap[oThis]);
+                    },
+                    onClick:function(record) {
+                        // console.log(record);
+                        // F00001
+                        if(record.value === ChartReportMVC.Define.SELECT_ALL_OPTIONS_KEY) {
+                            //console.log(oThis.combobox("getValues").length + ',' + oThis.combobox("getData").length )
+                            if(oThis.combobox("getValues").length == oThis.combobox("getData").length - 1){
+                                //oThis.combobox('unselect', ChartReportMVC.Define.SELECT_ALL_OPTIONS_KEY);
+                                oThis.combobox('setValues', ChartReportMVC.Cache.dataMap[oThis][0]);
+                            }
+                            else{
+                                oThis.combobox('setValues', ChartReportMVC.Cache.dataMap[oThis]);
+                            }
+                        }
+                        //console.log(TableReportMVC.Cache.dataMap[oThis]);
+                    },
+                    onSelect:function (record) {
+
+                    },
+                    onUnselect:function (record) {
+
+                    },
+                });
+
+
+
+
+            });
+
+
+
+
+
         }
     },
     Model: {

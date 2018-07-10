@@ -4,6 +4,9 @@ var TableReport = {
         TableReportMVC.View.bindEvent();
         TableReportMVC.View.bindValidate();
         TableReportMVC.View.initData();
+
+        //F00001
+        TableReportMVC.View.initSelect();
     }
 };
 
@@ -12,6 +15,12 @@ var TableReportCommon = {
 };
 
 var TableReportMVC = {
+    Define: {
+        SELECT_ALL_OPTIONS_KEY : '_SELECT_ALL_OPTIONS'
+    },
+    Cache: {
+      dataMap : {}
+    },
     URLs: {
         getData: {
             url: TableReportCommon.baseUrl + '/table/getData.json',
@@ -38,6 +47,67 @@ var TableReportMVC = {
         },
         initData: function () {
             TableReportMVC.Controller.generate(TableReportMVC.Model.Mode.classic, null);
+        },
+        //F00001
+        initSelect: function () {
+            $("#table-report-div select[data-options='multiple:true']").each(function(){
+                var oThis = $(this);
+                oThis.prepend("<option value='"+TableReportMVC.Define.SELECT_ALL_OPTIONS_KEY+"'>---全选/反选---</option>");
+                oThis.combobox({
+                    multiple:true,
+                    editable:false,
+                    //valueField:'value',
+                    //textField:'text',
+                    onBeforeLoad:function(param) {
+                    },
+                    onLoadSuccess:function() {
+                        //为每个oThis构造一个存储全量数据的缓存
+                        TableReportMVC.Cache.dataMap[oThis] = [];
+                        //获取全部数据
+                        oThis.children('option').each(function(index,element){
+                            if(element.value === TableReportMVC.Define.SELECT_ALL_OPTIONS_KEY ) {
+                                TableReportMVC.Cache.dataMap[oThis].push(element.value);
+                                ;
+                            }
+                            else{
+                                TableReportMVC.Cache.dataMap[oThis].push(element.value);
+                            }
+                        });
+                        //console.log(TableReportMVC.Cache.dataMap[oThis]);
+                    },
+                    onClick:function(record) {
+                        // console.log(record);
+                        // F00001
+                        if(record.value === TableReportMVC.Define.SELECT_ALL_OPTIONS_KEY) {
+                            //console.log(oThis.combobox("getValues").length + ',' + oThis.combobox("getData").length )
+                            if(oThis.combobox("getValues").length == oThis.combobox("getData").length - 1){
+                                //为什么设置0个元素，input.value='' ?
+                                oThis.combobox('setValues', TableReportMVC.Cache.dataMap[oThis][0]);
+                                //oThis.combobox('unselect', TableReportMVC.Define.SELECT_ALL_OPTIONS_KEY);
+                            }
+                            else{
+                                oThis.combobox('setValues', TableReportMVC.Cache.dataMap[oThis]);
+                            }
+                        }
+                        //console.log(TableReportMVC.Cache.dataMap[oThis]);
+                    },
+                    onSelect:function (record) {
+
+                    },
+                    onUnselect:function (record) {
+
+                    },
+                });
+
+
+
+
+            });
+
+
+
+
+
         }
     },
     Model: {
@@ -63,6 +133,7 @@ var TableReportMVC = {
                 success: function (result) {
                     if (!result.code) {
                         $('#table-report-htmltext-div').html(result.data.htmlTable);
+                        //console.log(result.data.htmlTable);
                         TableReportMVC.Util.render(mode || TableReportMVC.Model.Mode.classic);
                         TableReportMVC.Util.filterTable = TableReportMVC.Util.renderFilterTable(result.data);
                         if (callback instanceof Function) {
@@ -91,17 +162,19 @@ var TableReportMVC = {
             var data = $('#table-report-form').serializeObject();
             data["htmlText"] = htmlText;
 
+            /* 下载监听不到done事件
             $.messager.progress({
                 title: '请稍后...',
                 text: '报表正在生成中...',
             });
+            */
             $.fileDownload(url, {
                 httpMethod: "POST",
                 data: data
             }).done(function () {
-                $.messager.progress("close");
+                //$.messager.progress("close");
             }).fail(function () {
-                $.messager.progress("close");
+                //$.messager.progress("close");
             });
             e.preventDefault();
         }
@@ -139,7 +212,8 @@ var TableReportMVC = {
             });
 
             var noRowSpan = !TableReportMVC.Util.hasRowSpan();
-            table.data('isSort', noRowSpan).fixScroll();
+            //TODO 控制表头跟随内容向下滚动 有BUG，位置找不准先去掉。
+            //table.data('isSort', noRowSpan).fixScroll();
 
             //如果表格中没有跨行rowspan(暂不支持跨行)
             if (noRowSpan) {
@@ -199,14 +273,18 @@ var TableReportMVC = {
         },
         // 将报表上面的过滤信息拼成table，用于写入excel中
         renderFilterTable: function (result) {
+            // F00005
             var html = '<table>';
-            html += '<tr><td align="center" colspan="' + result.metaDataColumnCount + '"><h3>' + $('#table-report-name').text() + '</h3></td></tr>';
-            html += '<tr><td align="right" colspan="' + result.metaDataColumnCount + '"><h3>导出时间:' + TableReportMVC.Util.getCurrentTime() + '</h3></td></tr>';
+            //html += '<tr><td align="center" colspan="' + result.metaDataColumnCount + '"><h3>' + $('#table-report-name').text() + '</h3></td></tr>';
+            html += '<tr><td align="center" colspan="' + result.metaDataColumnCount + '"><h3>' + $('#table-report-title').text() + '</h3></td></tr>';
+            //html += '<tr><td align="right" colspan="' + result.metaDataColumnCount + '"><h3>导出时间:' + TableReportMVC.Util.getCurrentTime() + '</h3></td></tr>';
+            //console.log(html);
             $('#table-report-form .j-item').each(function () {
                 var type = $(this).attr('data-type');
                 if (type === 'date-range') {
                     var input = $(this).find('.combo-text');
                     html += '<tr><td align="right" colspan="' + result.metaDataColumnCount + '"><strong>时间范围:</strong>' + input.eq(0).val() + '~' + input.eq(1).val() + '</td></tr>';
+                    //console.log(html);
                 } else if (type === 'checkbox') {
                     html += '<tr><td align="right" colspan="' + result.metaDataColumnCount + '"><strong>筛选统计列:</strong>';
                     var rowChoose = [];
@@ -215,6 +293,7 @@ var TableReportMVC = {
                     })
                     html += rowChoose.join('、');
                     html += '</td></tr>';
+                    //console.log(html);
                 }
                 else if (new RegExp('datebox').test($(this).find("input").attr("class"))) {
                     var label = $(this).find('label').text().replace(':', '');
@@ -222,7 +301,11 @@ var TableReportMVC = {
                     if (!val) {
                         val = $(this).find('.combo-text').val();
                     }
-                    html += '<tr><td><strong>' + label + '</strong></td><td>' + val + '</td></tr>';
+                    // 解决 地市：undefined
+                    if(val ){
+                        html += '<tr><td><strong>' + label + '</strong></td><td>' + val + '</td></tr>';
+                    }
+                    //console.log(html);
                 }
                 else {
                     var label = $(this).find('label').text().replace(':', '');
@@ -230,10 +313,15 @@ var TableReportMVC = {
                     if (!val) {
                         val = $(this).find("input").attr("value");
                     }
-                    html += '<tr><td><strong>' + label + '</strong></td><td>' + val + '</td></tr>';
+
+                    if(val ) {
+                        html += '<tr><td><strong>' + label + '</strong></td><td>' + val + '</td></tr>';
+                    }
+                    //console.log(html);
                 }
             })
-            html += '<tr></tr><tr></tr><tr></tr></table>';
+            //html += '<tr></tr><tr></tr><tr></tr></table>';
+            html += '</table>';
             return html;
         },
         getExcelBytes: function (str) {
